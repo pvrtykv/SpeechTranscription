@@ -7,4 +7,4 @@
 Analizowanie dostępnych rozwiązań, wybór silnika: Julius.
 ### Sprint 2
 14.04.2021 - 28.04.2021
-Próba połączenia polskiego modelu językowego.
+Próba połączenia polskiego modelu językowego, stworzenie dokumentacji.
