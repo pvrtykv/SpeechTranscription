@@ -1,8 +1,28 @@
 import subprocess
 import re
 import utils
+import os
+import threading
 
 if __name__ == "__main__":
+    os.chdir("julius")
+    recording = utils.increment_filename("media/recording.wav")
+    record_control = utils.RecordControl()
+    thread = threading.Thread(target=utils.record_audio, args=(recording, record_control))
+
+    print("Started recording")
+    thread.start()
+    input("Enter any character to stop ")
+    record_control.finished = True
+    thread.join()
+    print("Finished recording")
+
+    file_list = open("test.dbl", 'w')
+    file_list.write(recording)
+    file_list.close()
+
+    os.chdir("..")
+
     julius_output = utils.increment_filename("julius_output.txt")
 
     subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + julius_output],
