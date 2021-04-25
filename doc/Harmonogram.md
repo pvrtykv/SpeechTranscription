@@ -21,8 +21,8 @@
 **Zadania:**
    * Podpięcie pod aplikację silnika Julius i realizacja transkrypcji mowy
    * Zadbanie o bezpieczeństwo danych
-7. 27.05.2021 - 9.06.2021
-**Zadania:** \
+7. 27.05.2021 - 9.06.2021 \
+**Zadania:** 
    * Testy
  
 
