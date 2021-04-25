@@ -24,8 +24,7 @@ def record_audio(filename: str, record_control: RecordControl):
     sample_format = pyaudio.paInt16
     channels = 1
     fs = 16000
-    seconds = 5
-
+    
     p = pyaudio.PyAudio()
 
     stream = p.open(format=sample_format,
