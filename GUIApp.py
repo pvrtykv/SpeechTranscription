@@ -1,0 +1,243 @@
+import threading
+import tkinter as tk                # python 3
+import wave
+from tkinter import font as tkfont  # python 3
+import os
+
+import pyaudio
+import sounddevice as sd
+
+
+class RecordControl():
+    def __init__(self):
+        self.finished = False
+
+    def record_audio(self, filename: str):
+        chunk = 1024
+        sample_format = pyaudio.paInt16
+        channels = 1
+        fs = 16000
+
+        p = pyaudio.PyAudio()
+
+        stream = p.open(format=sample_format,
+                        channels=channels,
+                        rate=fs,
+                        frames_per_buffer=chunk,
+                        input=True)
+
+        frames = []
+
+        while not self.finished:
+            data = stream.read(chunk)
+            frames.append(data)
+
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+
+        wf = wave.open(filename, 'wb')
+        wf.setnchannels(channels)
+        wf.setsampwidth(p.get_sample_size(sample_format))
+        wf.setframerate(fs)
+        wf.writeframes(b''.join(frames))
+        wf.close()
+
+    def increment_filename(self, path):
+        filename, extension = os.path.splitext(path)
+        counter = 1
+
+        while os.path.exists(path):
+            path = filename + str(counter) + extension
+            counter += 1
+
+        return path
+
+class SampleApp(tk.Tk):
+
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+
+        self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
+
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+        for F in (StartPage, Login, Register, MainPage):
+            page_name = F.__name__
+            frame = F(parent=container, controller=self)
+            self.frames[page_name] = frame
+
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame("StartPage")
+
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
+
+
+class StartPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="Witaj", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+
+        button1 = tk.Button(self, text="Login",
+                            command=lambda: controller.show_frame("Login"))
+        button2 = tk.Button(self, text="Register",
+                            command=lambda: controller.show_frame("Register"))
+        button1.pack()
+        button2.pack()
+
+
+class Login(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="Login Site", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+        button1 = tk.Button(self, text="Back",
+                           command=lambda: controller.show_frame("StartPage"))
+        button1.pack()
+
+        self.username = tk.StringVar()
+        self.password = tk.StringVar()
+
+        tk.Label(self, text="Username * ").pack()
+        self.username_login_entry = tk.Entry(self, textvariable=self.username)
+        self.username_login_entry.pack()
+        tk.Label(self, text="").pack()
+        tk.Label(self, text="Password * ").pack()
+        self.password_login_entry = tk.Entry(self, textvariable=self.password, show='*')
+        self.password_login_entry.pack()
+        tk.Label(self, text="").pack()
+        tk.Button(self, text="Login", width=10, height=1, command=self.login_verify).pack()
+
+    def login_verify(self):
+        username1 = self.username.get()
+        password1 = self.password.get()
+        self.username_login_entry.delete(0, 'end')
+        self.password_login_entry.delete(0, 'end')
+
+        list_of_files = os.listdir()
+        if username1 in list_of_files:
+            file1 = open(username1, "r")
+            verify = file1.read().splitlines()
+            if password1 in verify:
+                self.login_sucess()
+
+            else:
+                self.password_not_recognised()
+
+        else:
+            self.user_not_found()
+
+    def login_sucess(self):
+
+        self.controller.show_frame("MainPage")
+
+    def password_not_recognised(self):
+
+        password_not_recog_screen = tk.Toplevel(self)
+        password_not_recog_screen.title("Success")
+        password_not_recog_screen.geometry("150x100")
+        tk.Label(password_not_recog_screen, text="Invalid Password ").pack()
+        tk.Button(password_not_recog_screen, text="OK", command=lambda: self.delete_screen(password_not_recog_screen)).pack()
+
+
+    def user_not_found(self):
+
+        user_not_found_screen = tk.Toplevel(self)
+        user_not_found_screen.title("Success")
+        user_not_found_screen.geometry("150x100")
+        tk.Label(user_not_found_screen, text="User Not Found").pack()
+        tk.Button(user_not_found_screen, text="OK", command=lambda: self.delete_screen(user_not_found_screen)).pack()
+
+    def delete_screen(self,screen):
+        screen.destroy()
+
+
+class Register(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="Register site", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+
+        self.username = tk.StringVar()
+        self.password = tk.StringVar()
+
+        tk.Label(self, text="Please enter details below", bg="blue").pack()
+        tk.Label(self, text="").pack()
+        username_lable = tk.Label(self, text="Username * ")
+        username_lable.pack()
+        self.username_entry = tk.Entry(self, textvariable=self.username)
+        self.username_entry.pack()
+        password_lable = tk.Label(self, text="Password * ")
+        password_lable.pack()
+        self.password_entry = tk.Entry(self, textvariable=self.password, show='*')
+        self.password_entry.pack()
+        tk.Label(self, text="").pack()
+        tk.Button(self, text="Register", width=10, height=1, bg="blue", command=self.register_user).pack()
+
+        button = tk.Button(self, text="Go to the start page",
+                           command=lambda: controller.show_frame("StartPage"))
+        button.pack()
+
+    def register_user(self):
+        username_info = self.username.get()
+        password_info = self.password.get()
+
+        file = open(username_info, "w")
+        file.write(username_info + "\n")
+        file.write(password_info)
+        file.close()
+
+        self.username_entry.delete(0, 'end')
+        self.password_entry.delete(0, 'end')
+
+        self.controller.show_frame("MainPage")
+
+class MainPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="this is main page", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+        button = tk.Button(self, text="Log out",
+                           command=lambda: controller.show_frame("StartPage"))
+        button.pack()
+
+        button_recorder = tk.Button(self, text="Record", command= self.record)
+        button_recorder.pack()
+    def record(self):
+        record_screen = tk.Toplevel(self)
+        record_screen.title("Success")
+        record_screen.geometry("150x100")
+        tk.Label(record_screen, text="Recording in progress").pack()
+
+        if not os.path.exists('media'):
+            os.mkdir('media')
+        record_control = RecordControl()
+        recording = record_control.increment_filename("media/recording.wav")
+        thread = threading.Thread(target=record_control.record_audio, args=(recording,))
+        thread.start()
+        tk.Button(record_screen, text="STOP", command=lambda: self.delete_screen(record_screen, record_control, thread)).pack()
+
+    def delete_screen(self,screen, record_control, thread):
+        record_control.finished = True
+        thread.join()
+        screen.destroy()
+
+if __name__ == "__main__":
+    app = SampleApp()
+    app.mainloop()
