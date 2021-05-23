@@ -1,8 +1,11 @@
+import binascii
+import hashlib
 import threading
 import tkinter as tk                # python 3
 import wave
 from tkinter import font as tkfont  # python 3
 import os
+from tkinter import filedialog as fd
 
 import pyaudio
 import sounddevice as sd
@@ -59,7 +62,6 @@ class SampleApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
-
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -70,7 +72,6 @@ class SampleApp(tk.Tk):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
-
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("StartPage")
@@ -130,7 +131,9 @@ class Login(tk.Frame):
         if username1 in list_of_files:
             file1 = open(username1, "r")
             verify = file1.read().splitlines()
-            if password1 in verify:
+            password = verify[1]
+
+            if self.verify_password(password, password1):
                 self.login_sucess()
 
             else:
@@ -139,9 +142,11 @@ class Login(tk.Frame):
         else:
             self.user_not_found()
 
+
     def login_sucess(self):
 
         self.controller.show_frame("MainPage")
+
 
     def password_not_recognised(self):
 
@@ -163,6 +168,15 @@ class Login(tk.Frame):
     def delete_screen(self,screen):
         screen.destroy()
 
+    def verify_password(self, stored_password, provided_password):
+        salt = stored_password[:64]
+        stored_password = stored_password[64:]
+        pwdhash = hashlib.pbkdf2_hmac('sha512',
+                                      provided_password.encode('utf-8'),
+                                      salt.encode('ascii'),
+                                      100000)
+        pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+        return pwdhash == stored_password
 
 class Register(tk.Frame):
 
@@ -195,22 +209,33 @@ class Register(tk.Frame):
     def register_user(self):
         username_info = self.username.get()
         password_info = self.password.get()
+        encrypt = self.hash_password(password_info)
 
         file = open(username_info, "w")
         file.write(username_info + "\n")
-        file.write(password_info)
+        file.write(encrypt)
         file.close()
 
         self.username_entry.delete(0, 'end')
         self.password_entry.delete(0, 'end')
 
         self.controller.show_frame("MainPage")
+        # ----------------
+
+    def hash_password(self, password):
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+        pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
+                                      salt, 100000)
+        pwdhash = binascii.hexlify(pwdhash)
+        return (salt + pwdhash).decode('ascii')
+
 
 class MainPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.filetypes = [('text files', '.txt')]
         label = tk.Label(self, text="this is main page", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
         button = tk.Button(self, text="Log out",
@@ -219,6 +244,11 @@ class MainPage(tk.Frame):
 
         button_recorder = tk.Button(self, text="Record", command= self.record)
         button_recorder.pack()
+        button_player = tk.Button(self, text="Play")
+        button_player.pack()
+        button_reader = tk.Button(self, text="Open text file", command = self.fileopen)
+
+        button_reader.pack()
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
@@ -237,6 +267,19 @@ class MainPage(tk.Frame):
         record_control.finished = True
         thread.join()
         screen.destroy()
+    def delete_screen(self,screen):
+        screen.destroy()
+
+    def fileopen(self):
+
+        file = fd.askopenfilename(title="Open text file", initialdir='/', filetypes=self.filetypes)
+        file_screen = tk.Toplevel(self)
+        text = tk.Text(file_screen, height=12)
+        #file = open(f, "r")
+        with open(file, 'r') as f:
+            text.insert(self, f.read())
+        tk.Button(file_screen, text="STOP", command=lambda: self.delete_screen(file_screen)).pack()
+
 
 if __name__ == "__main__":
     app = SampleApp()
