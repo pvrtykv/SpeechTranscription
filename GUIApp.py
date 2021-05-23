@@ -1,11 +1,12 @@
 import binascii
 import hashlib
 import threading
-import tkinter as tk                # python 3
+import tkinter as tk  # python 3
 import wave
 from tkinter import font as tkfont  # python 3
 import os
 from tkinter import filedialog as fd
+from tkinter.scrolledtext import ScrolledText
 
 import pyaudio
 import sounddevice as sd
@@ -56,6 +57,7 @@ class RecordControl():
 
         return path
 
+
 class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -105,7 +107,7 @@ class Login(tk.Frame):
         label = tk.Label(self, text="Login Site", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
         button1 = tk.Button(self, text="Back",
-                           command=lambda: controller.show_frame("StartPage"))
+                            command=lambda: controller.show_frame("StartPage"))
         button1.pack()
 
         self.username = tk.StringVar()
@@ -134,7 +136,7 @@ class Login(tk.Frame):
             password = verify[1]
 
             if self.verify_password(password, password1):
-                self.login_sucess()
+                self.login_success()
 
             else:
                 self.password_not_recognised()
@@ -142,11 +144,9 @@ class Login(tk.Frame):
         else:
             self.user_not_found()
 
-
-    def login_sucess(self):
+    def login_success(self):
 
         self.controller.show_frame("MainPage")
-
 
     def password_not_recognised(self):
 
@@ -154,8 +154,8 @@ class Login(tk.Frame):
         password_not_recog_screen.title("Success")
         password_not_recog_screen.geometry("150x100")
         tk.Label(password_not_recog_screen, text="Invalid Password ").pack()
-        tk.Button(password_not_recog_screen, text="OK", command=lambda: self.delete_screen(password_not_recog_screen)).pack()
-
+        tk.Button(password_not_recog_screen, text="OK",
+                  command=lambda: self.delete_screen(password_not_recog_screen)).pack()
 
     def user_not_found(self):
 
@@ -165,7 +165,7 @@ class Login(tk.Frame):
         tk.Label(user_not_found_screen, text="User Not Found").pack()
         tk.Button(user_not_found_screen, text="OK", command=lambda: self.delete_screen(user_not_found_screen)).pack()
 
-    def delete_screen(self,screen):
+    def delete_screen(self, screen):
         screen.destroy()
 
     def verify_password(self, stored_password, provided_password):
@@ -177,6 +177,7 @@ class Login(tk.Frame):
                                       100000)
         pwdhash = binascii.hexlify(pwdhash).decode('ascii')
         return pwdhash == stored_password
+
 
 class Register(tk.Frame):
 
@@ -242,13 +243,14 @@ class MainPage(tk.Frame):
                            command=lambda: controller.show_frame("StartPage"))
         button.pack()
 
-        button_recorder = tk.Button(self, text="Record", command= self.record)
+        button_recorder = tk.Button(self, text="Record", command=self.record)
         button_recorder.pack()
         button_player = tk.Button(self, text="Play")
         button_player.pack()
-        button_reader = tk.Button(self, text="Open text file", command = self.fileopen)
+        button_reader = tk.Button(self, text="Open text file", command=self.open_file)
 
         button_reader.pack()
+
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
@@ -261,24 +263,27 @@ class MainPage(tk.Frame):
         recording = record_control.increment_filename("media/recording.wav")
         thread = threading.Thread(target=record_control.record_audio, args=(recording,))
         thread.start()
-        tk.Button(record_screen, text="STOP", command=lambda: self.delete_screen(record_screen, record_control, thread)).pack()
+        tk.Button(record_screen, text="STOP",
+                  command=lambda: self.delete_screen(record_screen, record_control, thread)).pack()
 
-    def delete_screen(self,screen, record_control, thread):
+    def delete_screen(self, screen, record_control, thread):
         record_control.finished = True
         thread.join()
         screen.destroy()
-    def delete_screen(self,screen):
+
+    def delete_screen(self, screen):
         screen.destroy()
 
-    def fileopen(self):
-
+    def open_file(self):
         file = fd.askopenfilename(title="Open text file", initialdir='/', filetypes=self.filetypes)
-        file_screen = tk.Toplevel(self)
-        text = tk.Text(file_screen, height=12)
-        #file = open(f, "r")
-        with open(file, 'r') as f:
-            text.insert(self, f.read())
-        tk.Button(file_screen, text="STOP", command=lambda: self.delete_screen(file_screen)).pack()
+        if file:
+            file_screen = tk.Tk()
+            text = ScrolledText(file_screen, height=30, width=30)
+
+            with open(file, 'r') as f:
+                text.insert(tk.END, f.read())
+            text.pack()
+            tk.Button(file_screen, text="STOP", command=lambda: self.delete_screen(file_screen)).pack()
 
 
 if __name__ == "__main__":
