@@ -5,6 +5,9 @@ import tkinter as tk  # python 3
 import wave
 from tkinter import font as tkfont  # python 3
 import os
+import utils
+import subprocess
+import re
 from tkinter import filedialog as fd
 from tkinter.scrolledtext import ScrolledText
 
@@ -236,6 +239,7 @@ class MainPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.cwd = os.getcwd()
         self.filetypes = [('text files', '.txt')]
         label = tk.Label(self, text="this is main page", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
@@ -248,8 +252,9 @@ class MainPage(tk.Frame):
         button_player = tk.Button(self, text="Play")
         button_player.pack()
         button_reader = tk.Button(self, text="Open text file", command=self.open_file)
-
         button_reader.pack()
+        button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe)
+        button_transcribe.pack()
 
     def record(self):
         record_screen = tk.Toplevel(self)
@@ -284,6 +289,43 @@ class MainPage(tk.Frame):
                 text.insert(tk.END, f.read())
             text.pack()
             tk.Button(file_screen, text="STOP", command=lambda: self.delete_screen(file_screen)).pack()
+
+    def transcribe(self):
+        file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd+'/media')
+        print(file)
+
+        file_list = open("julius/test.dbl", 'w')
+        file_list.write(file)
+        file_list.close()
+
+        if not os.path.exists('julius_output'):
+            os.mkdir('julius_output')
+
+        output = utils.increment_filename("julius_output/output.txt")
+
+        subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + output],
+                       shell=True, cwd="julius",
+                       check=True)
+
+        r = re.compile(r"sentence1: <s> (.+?) </s>")
+
+        f1 = open(output, 'r')
+        lines = f1.readlines()
+        f1.close()
+
+        if not os.path.exists('transcriptions'):
+            os.mkdir('transcriptions')
+
+        transcription = utils.increment_filename("transcriptions/transcription.txt")
+        f2 = open(transcription, 'a')
+
+        for line in lines:
+            c = r.match(line)
+            if c is not None:
+                f2.write("\n")
+                f2.write(c.group(1))
+
+        f2.close()
 
 
 if __name__ == "__main__":
