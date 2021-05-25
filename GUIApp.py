@@ -10,6 +10,9 @@ import subprocess
 import re
 from tkinter import filedialog as fd
 from tkinter.scrolledtext import ScrolledText
+import tkinter.ttk as ttk
+
+
 
 import pyaudio
 import sounddevice as sd
@@ -282,7 +285,7 @@ class MainPage(tk.Frame):
     def open_file(self):
         file = fd.askopenfilename(title="Open text file", initialdir='/', filetypes=self.filetypes)
         if file:
-            file_screen = tk.Tk()
+            file_screen = tk.Toplevel(self)
             text = ScrolledText(file_screen, height=30, width=30)
 
             with open(file, 'r') as f:
@@ -292,7 +295,10 @@ class MainPage(tk.Frame):
 
     def transcribe(self):
         file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd+'/media')
-        print(file)
+
+        transcribe_screen = tk.Toplevel(self)
+        text = ScrolledText(transcribe_screen, height=30, width=30)
+        text.pack()
 
         file_list = open("julius/test.dbl", 'w')
         file_list.write(file)
@@ -326,6 +332,12 @@ class MainPage(tk.Frame):
                 f2.write(c.group(1))
 
         f2.close()
+        with open(transcription, 'r') as f:
+            text.insert(tk.END, f.read())
+        text.pack()
+
+
+
 
 
 if __name__ == "__main__":
