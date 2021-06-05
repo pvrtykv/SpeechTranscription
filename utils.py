@@ -77,11 +77,11 @@ def load_key():
 def encrypt(filename, key):
     f = Fernet(key)
     with open(filename, "rb") as file:
-        # read all file data
         file_data = file.read()
     encrypted_data = f.encrypt(file_data)
     with open(filename, "wb") as file:
         file.write(encrypted_data)
+
 
 
 def decrypt(filename, key):
@@ -120,7 +120,7 @@ def transcribe(file):
         if not os.path.exists('transcriptions'):
             os.mkdir('transcriptions')
 
-        transcription = increment_filename("transcriptions/transcription.txt")
+        transcription = increment_filename("transcriptions/ENCtranscription.txt")
         f2 = open(transcription, 'a')
 
         for line in lines:
@@ -136,4 +136,6 @@ def transcribe(file):
 
         encrypt(output, KEY)
         encrypt(transcription, KEY)
+        os.rename(output, os.path.dirname(output) + "/ENC" + os.path.basename(output))
+
         return text

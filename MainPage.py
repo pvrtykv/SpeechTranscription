@@ -39,19 +39,18 @@ class MainPage(tk.Frame):
         button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe_start)
         button_transcribe.pack()
 
-    '''
+
     def delete_screen(self, screen, record_control, thread, recording):
         record_control.finished = True
         thread.join()
         utils.encrypt(recording, KEY)
         screen.destroy()
     '''
-
     def delete_screen(self, screen, record_control, thread):
         record_control.finished = True
         thread.join()
         screen.destroy()
-
+    '''
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
@@ -61,15 +60,19 @@ class MainPage(tk.Frame):
         if not os.path.exists('media'):
             os.mkdir('media')
         record_control = RecordControl()
-        recording = utils.increment_filename("media/recording.wav")
+        recording = utils.increment_filename("media/ENCrecording.wav")
         thread = threading.Thread(target=record_control.record_audio, args=(recording,))
         thread.start()
         tk.Button(record_screen, text="STOP",
-                  command=lambda: self.delete_screen(record_screen, record_control, thread)).pack()
+                  command=lambda: self.delete_screen(record_screen, record_control, thread, recording)).pack()
 
     def play(self):
         audio = fd.askopenfilename(title="Open wav file", initialdir=self.cwd + '/media')
+        prefix = os.path.basename(audio)[0:3]
         if audio:
+            if prefix == "ENC":
+                utils.decrypt(audio, KEY)
+
             play_screen = tk.Toplevel(self)
             play_screen.title("Play")
             play_screen.geometry("200x200")
@@ -95,6 +98,15 @@ class MainPage(tk.Frame):
             pause_btn.grid(row=0, column=1, padx=10)
             stop_btn.grid(row=0, column=2, padx=10)
 
+            def on_closing():
+                pygame.mixer.music.unload()
+                if prefix == "ENC":
+                    utils.encrypt(audio, KEY)
+
+                play_screen.destroy()
+
+            play_screen.protocol("WM_DELETE_WINDOW", on_closing)
+
     def play_audio(self):
         if self.is_playing is False:
             if self.is_paused:
@@ -112,6 +124,7 @@ class MainPage(tk.Frame):
             self.is_started = False
             self.is_playing = False
 
+
     def pause(self):
         if self.is_playing:
             pygame.mixer.music.pause()
@@ -121,10 +134,10 @@ class MainPage(tk.Frame):
 
     def open_file(self):
         file = fd.askopenfilename(title="Open text file", initialdir=self.cwd, filetypes=self.filetypes)
-        print(file)
-        directory = os.path.basename(os.path.dirname(file))
+        prefix = os.path.basename(file)[0:3]
+        print(prefix)
         if file:
-            if directory == "julius_output" or directory == "transcriptions":
+            if prefix == "ENC":
                 utils.decrypt(file, KEY)
             file_screen = tk.Toplevel(self)
             text = ScrolledText(file_screen, height=30, width=30)
@@ -132,7 +145,7 @@ class MainPage(tk.Frame):
             with open(file, 'r') as f:
                 text.insert(tk.END, f.read())
             text.pack()
-            if directory == "julius_output" or directory == "transcriptions":
+            if prefix == "ENC":
                 utils.encrypt(file, KEY)
             tk.Button(file_screen, text="STOP", command=file_screen.destroy).pack()
 
@@ -170,3 +183,4 @@ class MainPage(tk.Frame):
         view = ScrolledText(transcribe_screen, height=30, width=30)
         view.insert(tk.END, text)
         view.pack()
+
