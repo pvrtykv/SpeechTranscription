@@ -121,7 +121,7 @@ class Login(tk.Frame):
         tk.Label(self, text="").pack()
         tk.Button(self, text="Login", width=10, height=1, command=self.login_verify).pack()
 
-    def login_verify(self):
+    def login_verify(self, event=None):
         username1 = self.username.get()
         password1 = self.password.get()
         self.username_login_entry.delete(0, 'end')
@@ -313,12 +313,14 @@ class MainPage(tk.Frame):
         if self.is_playing:
             pygame.mixer.music.stop()
             self.is_started = False
+            self.is_playing = False
 
     def pause(self):
         if self.is_playing:
             pygame.mixer.music.pause()
-            time.sleep(2)
+            # time.sleep(2)
             self.is_paused = True
+            self.is_playing = False
 
     def delete_screen(self, screen, record_control, thread):
         record_control.finished = True
