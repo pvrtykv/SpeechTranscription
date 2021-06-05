@@ -1,5 +1,7 @@
 import binascii
 import hashlib
+import re
+import subprocess
 import threading
 import time
 import tkinter as tk  # python 3
@@ -7,14 +9,16 @@ import wave
 from tkinter import font as tkfont  # python 3
 import os
 import utils
-import subprocess
-import re
-from tkinter import filedialog as fd
+from tkinter import filedialog as fd, HORIZONTAL
 from tkinter.scrolledtext import ScrolledText
 import tkinter.ttk as ttk
+import tkinter.messagebox as mb
 import pyaudio
 import sounddevice as sd
 import pygame
+
+app = None
+
 
 class RecordControl():
     def __init__(self):
@@ -50,16 +54,6 @@ class RecordControl():
         wf.setframerate(fs)
         wf.writeframes(b''.join(frames))
         wf.close()
-
-    def increment_filename(self, path):
-        filename, extension = os.path.splitext(path)
-        counter = 1
-
-        while os.path.exists(path):
-            path = filename + str(counter) + extension
-            counter += 1
-
-        return path
 
 
 class SampleApp(tk.Tk):
@@ -183,6 +177,14 @@ class Login(tk.Frame):
         return pwdhash == stored_password
 
 
+def hash_password(password):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
+                                  salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    return (salt + pwdhash).decode('ascii')
+
+
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -214,7 +216,7 @@ class Register(tk.Frame):
     def register_user(self):
         username_info = self.username.get()
         password_info = self.password.get()
-        encrypt = self.hash_password(password_info)
+        encrypt = hash_password(password_info)
 
         file = open(username_info, "w")
         file.write(username_info + "\n")
@@ -226,13 +228,6 @@ class Register(tk.Frame):
 
         self.controller.show_frame("MainPage")
         # ----------------
-
-    def hash_password(self, password):
-        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-        pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
-                                      salt, 100000)
-        pwdhash = binascii.hexlify(pwdhash)
-        return (salt + pwdhash).decode('ascii')
 
 
 class MainPage(tk.Frame):
@@ -257,7 +252,7 @@ class MainPage(tk.Frame):
         button_player.pack()
         button_reader = tk.Button(self, text="Open text file", command=self.open_file)
         button_reader.pack()
-        button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe)
+        button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe_start)
         button_transcribe.pack()
 
     def record(self):
@@ -269,7 +264,7 @@ class MainPage(tk.Frame):
         if not os.path.exists('media'):
             os.mkdir('media')
         record_control = RecordControl()
-        recording = record_control.increment_filename("media/recording.wav")
+        recording = utils.increment_filename("media/recording.wav")
         thread = threading.Thread(target=record_control.record_audio, args=(recording,))
         thread.start()
         tk.Button(record_screen, text="STOP",
@@ -284,7 +279,6 @@ class MainPage(tk.Frame):
 
             pygame.mixer.init()
             pygame.mixer.music.load(audio)
-
 
             controls_frame = tk.Frame(play_screen)
             controls_frame.grid(pady=20)
@@ -320,7 +314,6 @@ class MainPage(tk.Frame):
             pygame.mixer.music.stop()
             self.is_started = False
 
-
     def pause(self):
         if self.is_playing:
             pygame.mixer.music.pause()
@@ -346,13 +339,41 @@ class MainPage(tk.Frame):
             text.pack()
             tk.Button(file_screen, text="STOP", command=lambda: self.delete_screen(file_screen)).pack()
 
-    def transcribe(self):
-        file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd+'/media')
-        if file:
-            transcribe_screen = tk.Toplevel(self)
-            text = ScrolledText(transcribe_screen, height=30, width=30)
-            text.pack()
+    def transcribe_start(self):
+        file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd + '/media')
 
+        def run():
+            print("job started")
+            text = self.transcribe(file)
+            self.delete_screen(progress_screen)
+            app.after(0, self.transcribe_finish, text)
+
+        def on_closing():
+            pass
+
+        thread = threading.Thread(target=run)
+        thread.setDaemon(True)
+        thread.start()
+
+        progress_screen = tk.Toplevel(self)
+        progress_screen.title("Transcription in progress")
+        progress_screen.geometry('350x100')
+        progress_screen.grab_set()  # zablokowanie głównego okna
+        progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
+
+        progress_bar = tk.ttk.Progressbar(progress_screen, orient=tk.HORIZONTAL, length=200, mode='indeterminate')
+        progress_bar.pack(expand=True)
+        progress_bar.start()
+
+    def transcribe_finish(self, text):
+        print("job done")
+        transcribe_screen = tk.Toplevel(self)
+        view = ScrolledText(transcribe_screen, height=30, width=30)
+        view.insert(tk.END, text)
+        view.pack()
+
+    def transcribe(self, file):
+        if file:
             file_list = open("julius/test.dbl", 'w')
             file_list.write(file)
             file_list.close()
@@ -386,8 +407,7 @@ class MainPage(tk.Frame):
 
             f2.close()
             with open(transcription, 'r') as f:
-                text.insert(tk.END, f.read())
-            text.pack()
+                return f.read()
 
 
 if __name__ == "__main__":
