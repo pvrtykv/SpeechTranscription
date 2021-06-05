@@ -97,7 +97,11 @@ KEY = load_key()
 
 
 def transcribe(file):
+    prefix = os.path.basename(file)[0:3]
     if file:
+        if prefix == "ENC":
+            decrypt(file, KEY)
+
         file_list = open("julius/test.dbl", 'w')
         file_list.write(file)
         file_list.close()
@@ -105,11 +109,14 @@ def transcribe(file):
         if not os.path.exists('julius_output'):
             os.mkdir('julius_output')
 
-        output = increment_filename("julius_output/output.txt")
+        output = increment_filename("julius_output/ENCoutput.txt")
 
         subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + output],
                        shell=True, cwd="julius",
                        check=True)
+
+        if prefix == "ENC":
+            encrypt(file, KEY)
 
         r = re.compile(r"sentence1: <s> (.+?) </s>")
 
@@ -136,6 +143,5 @@ def transcribe(file):
 
         encrypt(output, KEY)
         encrypt(transcription, KEY)
-        os.rename(output, os.path.dirname(output) + "/ENC" + os.path.basename(output))
 
         return text

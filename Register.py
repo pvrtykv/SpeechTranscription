@@ -13,7 +13,7 @@ class Register(tk.Frame):
         self.username = tk.StringVar()
         self.password = tk.StringVar()
 
-        tk.Label(self, text="Please enter details below", bg="blue").pack()
+        tk.Label(self, text="Please enter details below").pack()
         tk.Label(self, text="").pack()
         username_label = tk.Label(self, text="Username * ")
         username_label.pack()
@@ -24,7 +24,7 @@ class Register(tk.Frame):
         self.password_entry = tk.Entry(self, textvariable=self.password, show='*')
         self.password_entry.pack()
         tk.Label(self, text="").pack()
-        tk.Button(self, text="Register", width=10, height=1, bg="blue", command=self.register_user).pack()
+        tk.Button(self, text="Register", width=10, height=1, command=self.register_user).pack()
 
         button = tk.Button(self, text="Go to the start page",
                            command=lambda: controller.show_frame("StartPage"))

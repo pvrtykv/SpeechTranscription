@@ -135,7 +135,6 @@ class MainPage(tk.Frame):
     def open_file(self):
         file = fd.askopenfilename(title="Open text file", initialdir=self.cwd, filetypes=self.filetypes)
         prefix = os.path.basename(file)[0:3]
-        print(prefix)
         if file:
             if prefix == "ENC":
                 utils.decrypt(file, KEY)
