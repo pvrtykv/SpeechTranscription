@@ -8,7 +8,11 @@ from tkinter import filedialog as fd
 import pygame
 from tkinter.scrolledtext import ScrolledText
 import utils
+from GUIApp import app
 from GUIApp import RecordControl
+from utils import KEY
+import tkinter.ttk as ttk
+
 
 class MainPage(tk.Frame):
 
@@ -34,6 +38,19 @@ class MainPage(tk.Frame):
         button_reader.pack()
         button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe_start)
         button_transcribe.pack()
+
+    '''
+    def delete_screen(self, screen, record_control, thread, recording):
+        record_control.finished = True
+        thread.join()
+        utils.encrypt(recording, KEY)
+        screen.destroy()
+    '''
+
+    def delete_screen(self, screen, record_control, thread):
+        record_control.finished = True
+        thread.join()
+        screen.destroy()
 
     def record(self):
         record_screen = tk.Toplevel(self)
@@ -102,50 +119,50 @@ class MainPage(tk.Frame):
             self.is_paused = True
             self.is_playing = False
 
-    def delete_screen(self, screen, record_control, thread):
-        record_control.finished = True
-        thread.join()
-        screen.destroy()
-
-    # def delete_screen(self, screen):
-    #    screen.destroy()
-
     def open_file(self):
         file = fd.askopenfilename(title="Open text file", initialdir=self.cwd, filetypes=self.filetypes)
+        print(file)
+        directory = os.path.basename(os.path.dirname(file))
         if file:
+            if directory == "julius_output" or directory == "transcriptions":
+                utils.decrypt(file, KEY)
             file_screen = tk.Toplevel(self)
             text = ScrolledText(file_screen, height=30, width=30)
 
             with open(file, 'r') as f:
                 text.insert(tk.END, f.read())
             text.pack()
+            if directory == "julius_output" or directory == "transcriptions":
+                utils.encrypt(file, KEY)
             tk.Button(file_screen, text="STOP", command=file_screen.destroy).pack()
 
     def transcribe_start(self):
-        file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd + '/media')
+        file = fd.askopenfilename(title="Open wav file", initialdir=self.cwd + '/media',
+                                  filetypes=[('wav files', '.wav')])
 
         def run():
             print("job started")
-            text = self.transcribe(file)
+            text = utils.transcribe(file)
             progress_screen.destroy()
-            app.after(0, self.transcribe_finish, text)
+            self.transcribe_finish(text)
 
         def on_closing():
             pass
 
-        thread = threading.Thread(target=run)
-        thread.setDaemon(True)
-        thread.start()
+        if file:
+            thread = threading.Thread(target=run)
+            thread.setDaemon(True)
+            thread.start()
 
-        progress_screen = tk.Toplevel(self)
-        progress_screen.title("Transcription in progress")
-        progress_screen.geometry('350x100')
-        progress_screen.grab_set()  # zablokowanie głównego okna
-        progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
+            progress_screen = tk.Toplevel(self)
+            progress_screen.title("Transcription in progress")
+            progress_screen.geometry('350x100')
+            progress_screen.grab_set()  # zablokowanie głównego okna
+            progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
 
-        progress_bar = tk.ttk.Progressbar(progress_screen, orient=tk.HORIZONTAL, length=200, mode='indeterminate')
-        progress_bar.pack(expand=True)
-        progress_bar.start()
+            progress_bar = ttk.Progressbar(progress_screen, orient=tk.HORIZONTAL, length=200, mode='indeterminate')
+            progress_bar.pack(expand=True)
+            progress_bar.start()
 
     def transcribe_finish(self, text):
         print("job done")
@@ -153,41 +170,3 @@ class MainPage(tk.Frame):
         view = ScrolledText(transcribe_screen, height=30, width=30)
         view.insert(tk.END, text)
         view.pack()
-
-    def transcribe(self, file):
-        if file:
-            file_list = open("julius/test.dbl", 'w')
-            file_list.write(file)
-            file_list.close()
-
-            if not os.path.exists('julius_output'):
-                os.mkdir('julius_output')
-
-            output = utils.increment_filename("julius_output/output.txt")
-
-            subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + output],
-                           shell=True, cwd="julius",
-                           check=True)
-
-            r = re.compile(r"sentence1: <s> (.+?) </s>")
-
-            f1 = open(output, 'r')
-            lines = f1.readlines()
-            f1.close()
-
-            if not os.path.exists('transcriptions'):
-                os.mkdir('transcriptions')
-
-            transcription = utils.increment_filename("transcriptions/transcription.txt")
-            f2 = open(transcription, 'a')
-
-            for line in lines:
-                c = r.match(line)
-                if c is not None:
-                    f2.write("\n")
-                    f2.write(c.group(1))
-
-            f2.close()
-            with open(transcription, 'r') as f:
-                return f.read()
-

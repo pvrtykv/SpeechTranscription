@@ -1,7 +1,7 @@
 from tkinter import font as tkfont  # python 3
 from Login import *
-from Register import *
 from MainPage import *
+from Register import *
 
 app = None
 
@@ -46,12 +46,19 @@ class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.iconphoto(True, tk.PhotoImage(file='images/icon.png'))
+        self.title('Speech Transcription')
+        self.title_font = tkfont.Font(family='Helvetica', size=18)
 
-        self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
+
+        position_right = int(self.winfo_screenwidth() / 2 - self.winfo_reqwidth() / 2)
+        position_down = int(self.winfo_screenheight() / 2 - self.winfo_reqheight() / 2)
+
+        self.geometry("+{}+{}".format(position_right, position_down))
 
         self.frames = {}
         for F in (StartPage, Login, Register, MainPage):
@@ -75,13 +82,15 @@ class StartPage(tk.Frame):
         label = tk.Label(self, text="Witaj", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
-        button1 = tk.Button(self, text="Login",
-                            command=lambda: controller.show_frame("Login"))
-        button2 = tk.Button(self, text="Register",
-                            command=lambda: controller.show_frame("Register"))
-        button1.pack()
-        button2.pack()
+        login_button = tk.Button(self, text="Login", command=lambda: controller.show_frame("Login"))
+        register_button = tk.Button(self, text="Register", command=lambda: controller.show_frame("Register"))
+        login_button.pack()
+        register_button.pack()
+
 
 if __name__ == "__main__":
+    # Jeśli używasz aplikacji po raz pierwszy odkomentuj linię poniżej. Przed następnymi uruchomieniami należy ją
+    # ponownie zakomentować.
+    # write_key()
     app = SampleApp()
     app.mainloop()
