@@ -1,32 +1,33 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from utils import *
 
 
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.controller = controller
-        label = tk.Label(self, text="Register site", font=controller.title_font)
+        label = ttk.Label(self, text="Register site", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
         self.username = tk.StringVar()
         self.password = tk.StringVar()
 
-        tk.Label(self, text="Please enter details below").pack()
-        tk.Label(self, text="").pack()
-        username_label = tk.Label(self, text="Username * ")
+        ttk.Label(self, text="Please enter details below").pack()
+        ttk.Label(self, text="").pack()
+        username_label = ttk.Label(self, text="Username * ")
         username_label.pack()
-        self.username_entry = tk.Entry(self, textvariable=self.username)
+        self.username_entry = ttk.Entry(self, textvariable=self.username)
         self.username_entry.pack()
-        password_label = tk.Label(self, text="Password * ")
+        password_label = ttk.Label(self, text="Password * ")
         password_label.pack()
-        self.password_entry = tk.Entry(self, textvariable=self.password, show='*')
+        self.password_entry = ttk.Entry(self, textvariable=self.password, show='*')
         self.password_entry.pack()
-        tk.Label(self, text="").pack()
-        tk.Button(self, text="Register", width=10, height=1, command=self.register_user).pack()
+        ttk.Label(self, text="").pack()
+        ttk.Button(self, text="Register", width=10,  command=self.register_user).pack()
 
-        button = tk.Button(self, text="Go to the start page",
+        button = ttk.Button(self, text="Go to the start page",
                            command=lambda: controller.show_frame("StartPage"))
         button.pack()
 

@@ -1,4 +1,5 @@
 from tkinter import font as tkfont  # python 3
+import tkinter.ttk as ttk
 from Login import *
 from MainPage import *
 from Register import *
@@ -49,8 +50,10 @@ class SampleApp(tk.Tk):
         self.iconphoto(True, tk.PhotoImage(file='images/icon.png'))
         self.title('Speech Transcription')
         self.title_font = tkfont.Font(family='Helvetica', size=18)
+        self.style = ttk.Style(self)
+        self.style.theme_use('clam')
 
-        container = tk.Frame(self)
+        container = ttk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
@@ -74,16 +77,16 @@ class SampleApp(tk.Tk):
         frame.tkraise()
 
 
-class StartPage(tk.Frame):
+class StartPage(ttk.Frame):
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.controller = controller
-        label = tk.Label(self, text="Witaj", font=controller.title_font)
+        label = ttk.Label(self, text="Welcome", font=controller.title_font, anchor=tk.CENTER)
         label.pack(side="top", fill="x", pady=10)
 
-        login_button = tk.Button(self, text="Login", command=lambda: controller.show_frame("Login"))
-        register_button = tk.Button(self, text="Register", command=lambda: controller.show_frame("Register"))
+        login_button = ttk.Button(self, text="Login", command=lambda: controller.show_frame("Login"))
+        register_button = ttk.Button(self, text="Register", command=lambda: controller.show_frame("Register"))
         login_button.pack()
         register_button.pack()
 

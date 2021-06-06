@@ -8,6 +8,7 @@ import pyaudio
 import wave
 
 
+
 class RecordControl:
     def __init__(self):
         self.finished = False
@@ -82,8 +83,6 @@ def encrypt(filename, key):
     with open(filename, "wb") as file:
         file.write(encrypted_data)
 
-
-
 def decrypt(filename, key):
     f = Fernet(key)
     with open(filename, "rb") as file:
@@ -146,8 +145,7 @@ def transcribe(file):
         encrypt(output, KEY)
         encrypt(transcription, KEY)
 
-
-        return text
+        return text, os.path.basename(transcription)
 
 
 def change_prefix_and_decrypt(file, key):
