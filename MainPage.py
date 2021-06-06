@@ -55,7 +55,7 @@ class MainPage(ttk.Frame):
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
-        record_screen.geometry("150x100")
+        record_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
         ttk.Label(record_screen, text="Recording in progress").pack()
 
         if not os.path.exists('media'):
@@ -76,10 +76,9 @@ class MainPage(ttk.Frame):
                 enc_filename = audio
                 audio = utils.change_prefix_and_decrypt(audio, KEY)
 
-
             play_screen = tk.Toplevel(self)
             play_screen.title("Play " + os.path.basename(audio))
-            play_screen.geometry("250x200+{}+{}".format(self.position_right, self.position_down))
+            play_screen.geometry("215x100+{}+{}".format(self.position_right, self.position_down))
 
             pygame.mixer.init()
             pygame.mixer.music.load(audio)
@@ -178,7 +177,7 @@ class MainPage(ttk.Frame):
 
             progress_screen = tk.Toplevel(self)
             progress_screen.title("Transcription in progress")
-            progress_screen.geometry('350x100')
+            progress_screen.geometry('350x100+{}+{}'.format(self.position_right, self.position_down))
             progress_screen.grab_set()  # zablokowanie głównego okna
             progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -189,7 +188,6 @@ class MainPage(ttk.Frame):
     def transcribe_finish(self, text, filename):
         print("job done")
         transcribe_screen = tk.Toplevel(self)
-        transcribe_screen.geometry('300x400')
         transcribe_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
         transcribe_screen.title(filename)
         view = ScrolledText(transcribe_screen, height=30, width=30)

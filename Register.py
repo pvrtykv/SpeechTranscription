@@ -24,11 +24,11 @@ class Register(tk.Frame):
         password_label.pack()
         self.password_entry = ttk.Entry(self, textvariable=self.password, show='*')
         self.password_entry.pack()
-        ttk.Label(self, text="").pack()
-        ttk.Button(self, text="Register", width=10,  command=self.register_user).pack()
+        ttk.Label(self, text="", anchor=tk.CENTER).pack()
+        ttk.Button(self, text="Register", width=10, command=self.register_user).pack()
 
         button = ttk.Button(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
+                            command=lambda: controller.show_frame("StartPage"))
         button.pack()
 
     def register_user(self):
