@@ -100,7 +100,8 @@ def transcribe(file):
     prefix = os.path.basename(file)[0:3]
     if file:
         if prefix == "ENC":
-            decrypt(file, KEY)
+            enc_filename = file
+            file = change_prefix_and_decrypt(file, KEY)
 
         file_list = open("julius/test.dbl", 'w')
         file_list.write(file)
@@ -117,6 +118,7 @@ def transcribe(file):
 
         if prefix == "ENC":
             encrypt(file, KEY)
+            os.rename(file, enc_filename)
 
         r = re.compile(r"sentence1: <s> (.+?) </s>")
 
@@ -144,4 +146,15 @@ def transcribe(file):
         encrypt(output, KEY)
         encrypt(transcription, KEY)
 
+
         return text
+
+
+def change_prefix_and_decrypt(file, key):
+    decrypt(file, key)
+    dec_filename = os.path.basename(file)
+    dec_filename = dec_filename.replace("ENC", "")
+    dec_filename = os.path.dirname(file) + "/" + dec_filename
+    os.rename(file, dec_filename)
+    file = dec_filename
+    return file

@@ -39,18 +39,19 @@ class MainPage(tk.Frame):
         button_transcribe = tk.Button(self, text="Transcribe", command=self.transcribe_start)
         button_transcribe.pack()
 
-
     def delete_screen(self, screen, record_control, thread, recording):
         record_control.finished = True
         thread.join()
         utils.encrypt(recording, KEY)
         screen.destroy()
+
     '''
     def delete_screen(self, screen, record_control, thread):
         record_control.finished = True
         thread.join()
         screen.destroy()
     '''
+
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
@@ -71,7 +72,8 @@ class MainPage(tk.Frame):
         prefix = os.path.basename(audio)[0:3]
         if audio:
             if prefix == "ENC":
-                utils.decrypt(audio, KEY)
+                enc_filename = audio
+                audio = utils.change_prefix_and_decrypt(audio, KEY)
 
             play_screen = tk.Toplevel(self)
             play_screen.title("Play")
@@ -102,6 +104,7 @@ class MainPage(tk.Frame):
                 pygame.mixer.music.unload()
                 if prefix == "ENC":
                     utils.encrypt(audio, KEY)
+                    os.rename(audio, enc_filename)
 
                 play_screen.destroy()
 
@@ -124,7 +127,6 @@ class MainPage(tk.Frame):
             self.is_started = False
             self.is_playing = False
 
-
     def pause(self):
         if self.is_playing:
             pygame.mixer.music.pause()
@@ -137,15 +139,20 @@ class MainPage(tk.Frame):
         prefix = os.path.basename(file)[0:3]
         if file:
             if prefix == "ENC":
-                utils.decrypt(file, KEY)
+                enc_filename = file
+                file = utils.change_prefix_and_decrypt(file, KEY)
+
             file_screen = tk.Toplevel(self)
             text = ScrolledText(file_screen, height=30, width=30)
 
             with open(file, 'r') as f:
                 text.insert(tk.END, f.read())
             text.pack()
+
             if prefix == "ENC":
                 utils.encrypt(file, KEY)
+                os.rename(file, enc_filename)
+
             tk.Button(file_screen, text="STOP", command=file_screen.destroy).pack()
 
     def transcribe_start(self):
@@ -179,7 +186,7 @@ class MainPage(tk.Frame):
     def transcribe_finish(self, text):
         print("job done")
         transcribe_screen = tk.Toplevel(self)
+        transcribe_screen.title()
         view = ScrolledText(transcribe_screen, height=30, width=30)
         view.insert(tk.END, text)
         view.pack()
-
