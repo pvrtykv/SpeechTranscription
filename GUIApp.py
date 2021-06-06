@@ -92,8 +92,7 @@ class StartPage(ttk.Frame):
 
 
 if __name__ == "__main__":
-    # Jeśli używasz aplikacji po raz pierwszy odkomentuj linię poniżej. Przed następnymi uruchomieniami należy ją
-    # ponownie zakomentować.
-    # write_key()
+    if not os.path.exists('key.key'):
+        write_key()
     app = SampleApp()
     app.mainloop()
