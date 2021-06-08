@@ -7,7 +7,7 @@ from tkinter import filedialog as fd
 from tkinter.scrolledtext import ScrolledText
 import pygame
 import utils
-from GUIApp import RecordControl
+from RecordControl import *
 from utils import KEY
 
 
