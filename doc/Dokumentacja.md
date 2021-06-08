@@ -39,9 +39,20 @@ Uruchomienie programu
 ```
 python3 SpeechTranscription.py
 ```
-By móc korzystać z programu należy się zarejestrować, a następnie zalogować. Następnie z menu głównego należy wybrać interesującą nas opcję.
-
-<p align="center">
+Po uruchomieniu programu pojawi się poniższy ekran.
+<p align="left">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/start-menu.PNG?raw=true" />
+</p>
+Klikamy w Register i mamy możliwość utworzenia nowego użytkownika.
+<p align="left">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/register_menu.PNG?raw=true" />
+</p>
+Przy logowaniu należy wpisać dane któregoś z istniejących kont.
+<p align="left">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/login_menu.PNG?raw=true" />
+</p>
+Gdy logowanie przebiegnie pomyślnie, pojawi się główne menu.
+<p align="left">
   <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/menu.png?raw=true" />
 </p>
 
