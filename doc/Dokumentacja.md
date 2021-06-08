@@ -45,6 +45,17 @@ By móc korzystać z programu należy się zarejestrować, a następnie zalogowa
   <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/menu.png?raw=true" />
 </p>
 
+## Opcje w menu
+ - **Record**
+ Nagrywanie dźwięku przez użytkownika. Dostęp do nich jest możliwy po zalogowaniu. 
+ - **Play**
+ Odtwarzanie nagranego wcześniej dźwięku.
+ - **Open text file**
+ Dostęp do plików tekstowych zawierających transkrypcję.
+ - **Transcribe**
+ Wykonuje przy pomocy Juliusa transkrypcję nagrań do pliku txt.
+ - **Log out**
+ Wylogowanie z aplikacji.
 
 
 ## Wykorzystane narzędzia
