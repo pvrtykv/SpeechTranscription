@@ -46,8 +46,9 @@ By móc korzystać z programu należy się zarejestrować, a następnie zalogowa
 </p>
 
 ## Opcje w menu
+ Dostęp do opcji jest możliwy po zalogowaniu. 
  - **Record**
- Nagrywanie dźwięku przez użytkownika. Dostęp do nich jest możliwy po zalogowaniu. 
+ Nagrywanie dźwięku przez użytkownika.
  - **Play**
  Odtwarzanie nagranego wcześniej dźwięku.
  - **Open text file**
