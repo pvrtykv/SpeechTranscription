@@ -70,7 +70,6 @@ class MainPage(ttk.Frame):
     def play(self):
         audio = fd.askopenfilename(title="Open wav file", initialdir=self.cwd + '/media')
         prefix = os.path.basename(audio)[0:3]
-
         if audio:
             if prefix == "ENC":
                 enc_filename = audio
@@ -103,10 +102,13 @@ class MainPage(ttk.Frame):
 
             def on_closing():
                 pygame.mixer.music.unload()
+                pygame.mixer.quit()
                 if prefix == "ENC":
                     utils.encrypt(audio, KEY)
                     os.rename(audio, enc_filename)
-
+                    self.is_paused = False
+                    self.is_playing = False
+                    self.is_started = False
                 play_screen.destroy()
 
             play_screen.protocol("WM_DELETE_WINDOW", on_closing)
@@ -147,7 +149,7 @@ class MainPage(ttk.Frame):
             file_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
             text = ScrolledText(file_screen, wrap="word", height=30, width=30)
 
-            with open(file, 'r') as f:
+            with open(file, 'r', encoding="iso-8859-2") as f:
                 text.insert(tk.END, f.read())
             text.pack()
 
