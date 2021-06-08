@@ -145,9 +145,9 @@ class MainPage(ttk.Frame):
 
             file_screen = tk.Toplevel(self)
             file_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
-            text = ScrolledText(file_screen, height=30, width=30)
+            text = ScrolledText(file_screen, wrap="word", height=30, width=30)
 
-            with open(file, 'r') as f:
+            with open(file, 'r', encoding="iso-8859-2") as f:
                 text.insert(tk.END, f.read())
             text.pack()
 
@@ -190,6 +190,6 @@ class MainPage(ttk.Frame):
         transcribe_screen = tk.Toplevel(self)
         transcribe_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
         transcribe_screen.title(filename)
-        view = ScrolledText(transcribe_screen, height=30, width=30)
+        view = ScrolledText(transcribe_screen, wrap="word", height=30, width=30)
         view.insert(tk.END, text)
         view.pack()

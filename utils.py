@@ -139,7 +139,7 @@ def transcribe(file):
 
         f2.close()
 
-        with open(transcription, 'r') as f:
+        with open(transcription, 'r', encoding="iso-8859-2") as f:
             text = f.read()
 
         encrypt(output, KEY)
