@@ -69,6 +69,16 @@ Gdy logowanie przebiegnie pomyślnie, pojawi się główne menu.
  - **Log out**
  Wylogowanie z aplikacji.
 
+W projekcie znajdują się 3 demonstracyjne nagrania dźwiękowe. Można również pobrać pliki wav z internetu. Posiadanie dyktafonu nie jest więc wymagane do korzystania z aplikacji.
+Okno wyświetlające się podczas nagrywania.
+<p align="left">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/recording.PNG?raw=true" />
+</p>
+
+Przykładowy rezultat transkrypcji.
+<p align="left">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/result.PNG?raw=true" />
+</p>
 
 ## Wykorzystane narzędzia
  - Silnik rozpoznawania mowy [Julius](https://github.com/julius-speech/julius)
