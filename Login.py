@@ -10,9 +10,6 @@ class Login(tk.Frame):
         self.controller = controller
         label = ttk.Label(self, text="Login Site", font=controller.title_font, anchor=tk.CENTER)
         label.pack(side="top", fill="x", pady=10)
-        button1 = ttk.Button(self, text="Back",
-                            command=lambda: controller.show_frame("StartPage"))
-        button1.pack()
 
         self.username = tk.StringVar()
         self.password = tk.StringVar()
@@ -27,6 +24,9 @@ class Login(tk.Frame):
         tk.Button(self, text="Login", width=10, height=1, command=self.login_verify).pack()
         self.focus_set()
         self.bind(self, '<Return>', (lambda event: self.login_verify()))
+        button1 = ttk.Button(self, text="Back",
+                            command=lambda: controller.show_frame("StartPage"))
+        button1.pack()
 
     def login_verify(self, event=None):
         username1 = self.username.get()
