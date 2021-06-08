@@ -72,7 +72,9 @@ def write_key():
 
 
 def load_key():
-    return open("key.key", "rb").read()
+    if os.path.exists('key.key'):
+        return open("key.key", "rb").read()
+    return
 
 
 def encrypt(filename, key):
