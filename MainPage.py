@@ -147,7 +147,7 @@ class MainPage(ttk.Frame):
             file_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
             text = ScrolledText(file_screen, wrap="word", height=30, width=30)
 
-            with open(file, 'r', encoding="iso-8859-2") as f:
+            with open(file, 'r') as f:
                 text.insert(tk.END, f.read())
             text.pack()
 
