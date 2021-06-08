@@ -26,9 +26,6 @@ class MainPage(ttk.Frame):
 
         label = ttk.Label(self, text="Menu", font=controller.title_font, anchor=tk.CENTER)
         label.pack(side="top", fill="x", pady=10)
-        button = ttk.Button(self, text="Log out",
-                            command=lambda: controller.show_frame("StartPage"))
-        button.pack()
 
         button_recorder = ttk.Button(self, text="Record", command=self.record)
         button_recorder.pack()
@@ -38,6 +35,9 @@ class MainPage(ttk.Frame):
         button_reader.pack()
         button_transcribe = ttk.Button(self, text="Transcribe", command=self.transcribe_start)
         button_transcribe.pack()
+        button = ttk.Button(self, text="Log out",
+                            command=lambda: controller.show_frame("StartPage"))
+        button.pack()
 
     def delete_screen(self, screen, record_control, thread, recording):
         record_control.finished = True
