@@ -27,7 +27,7 @@ class Register(tk.Frame):
         ttk.Label(self, text="", anchor=tk.CENTER).pack()
         ttk.Button(self, text="Register", width=10, command=self.register_user).pack()
 
-        button = ttk.Button(self, text="Go to the start page",
+        button = ttk.Button(self, text="Back",
                             command=lambda: controller.show_frame("StartPage"))
         button.pack()
 
