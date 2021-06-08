@@ -20,7 +20,6 @@ class Login(tk.Frame):
         ttk.Label(self, text="Username * ").pack()
         self.username_login_entry = ttk.Entry(self, textvariable=self.username)
         self.username_login_entry.pack()
-        ttk.Label(self, text="").pack()
         ttk.Label(self, text="Password * ").pack()
         self.password_login_entry = ttk.Entry(self, textvariable=self.password, show='*')
         self.password_login_entry.pack()
