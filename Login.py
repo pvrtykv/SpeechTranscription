@@ -10,7 +10,8 @@ class Login(tk.Frame):
         self.controller = controller
         label = ttk.Label(self, text="Login Site", font=controller.title_font, anchor=tk.CENTER)
         label.pack(side="top", fill="x", pady=10)
-
+        self.position_right = int(self.winfo_screenwidth() / 2 - self.winfo_reqwidth() / 2)
+        self.position_down = int(self.winfo_screenheight() / 2 - self.winfo_reqheight() / 2)
         self.username = tk.StringVar()
         self.password = tk.StringVar()
 
@@ -21,11 +22,11 @@ class Login(tk.Frame):
         self.password_login_entry = ttk.Entry(self, textvariable=self.password, show='*')
         self.password_login_entry.pack()
         ttk.Label(self, text="").pack()
-        tk.Button(self, text="Login", width=10, height=1, command=self.login_verify).pack()
+        ttk.Button(self, text="Login",  command=self.login_verify).pack()
         self.focus_set()
         self.bind(self, '<Return>', (lambda event: self.login_verify()))
         button1 = ttk.Button(self, text="Back",
-                            command=lambda: controller.show_frame("StartPage"))
+                             command=lambda: controller.show_frame("StartPage"))
         button1.pack()
 
     def login_verify(self, event=None):
@@ -60,13 +61,13 @@ class Login(tk.Frame):
         password_not_recog_screen.geometry("150x100")
         ttk.Label(password_not_recog_screen, text="Invalid Password ").pack()
         ttk.Button(password_not_recog_screen, text="OK",
-                  command=password_not_recog_screen.destroy).pack()
+                   command=password_not_recog_screen.destroy).pack()
 
     def user_not_found(self):
 
         user_not_found_screen = tk.Toplevel(self)
         user_not_found_screen.title("Success")
-        user_not_found_screen.geometry("150x100")
+        user_not_found_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
         ttk.Label(user_not_found_screen, text="User Not Found").pack()
         ttk.Button(user_not_found_screen, text="OK", command=user_not_found_screen.destroy).pack()
 
@@ -79,4 +80,3 @@ class Login(tk.Frame):
                                       100000)
         pwdhash = binascii.hexlify(pwdhash).decode('ascii')
         return pwdhash == stored_password
-

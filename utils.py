@@ -103,7 +103,6 @@ KEY = load_key()
 def transcribe(file):
     recording_filename = os.path.basename(file)
     recording_filename = os.path.splitext(recording_filename)[0]
-    print(recording_filename)
     prefix = recording_filename[0:3]
     if file:
         if prefix == "ENC":

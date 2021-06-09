@@ -14,6 +14,7 @@ class SampleApp(tk.Tk):
         self.title('Speech Transcription')
         self.title_font = tkfont.Font(family='Helvetica', size=18)
         self.style = ttk.Style(self)
+        self.resizable(0, 0)
         self.style.theme_use('clam')
 
         container = ttk.Frame(self)
@@ -24,7 +25,7 @@ class SampleApp(tk.Tk):
         position_right = int(self.winfo_screenwidth() / 2 - self.winfo_reqwidth() / 2)
         position_down = int(self.winfo_screenheight() / 2 - self.winfo_reqheight() / 2)
 
-        self.geometry("+{}+{}".format(position_right, position_down))
+        self.geometry("170x280+{}+{}".format(position_right, position_down))
 
         self.frames = {}
         for F in (StartPage, Login, Register, MainPage):
@@ -46,7 +47,7 @@ class StartPage(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
         label = ttk.Label(self, text="Welcome", font=controller.title_font, anchor=tk.CENTER)
-        label.pack(side="top", fill="x", pady=10)
+        label.pack(side="top", fill="both", pady=10)
 
         login_button = ttk.Button(self, text="Login", command=lambda: controller.show_frame("Login"))
         register_button = ttk.Button(self, text="Register", command=lambda: controller.show_frame("Register"))

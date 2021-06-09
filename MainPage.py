@@ -11,6 +11,7 @@ from RecordControl import *
 from utils import KEY
 import datetime
 
+
 class MainPage(ttk.Frame):
 
     def __init__(self, parent, controller):
@@ -45,13 +46,6 @@ class MainPage(ttk.Frame):
         utils.change_prefix_and_encrypt(recording, KEY)
         screen.destroy()
 
-    '''
-    def delete_screen(self, screen, record_control, thread):
-        record_control.finished = True
-        thread.join()
-        screen.destroy()
-    '''
-
     def record(self):
         record_screen = tk.Toplevel(self)
         record_screen.title("Success")
@@ -80,6 +74,7 @@ class MainPage(ttk.Frame):
             play_screen = tk.Toplevel(self)
             play_screen.title("Play " + os.path.basename(audio))
             play_screen.geometry("215x100+{}+{}".format(self.position_right, self.position_down))
+            play_screen.resizable(0,0)
 
             pygame.mixer.init()
             pygame.mixer.music.load(audio)
@@ -149,6 +144,7 @@ class MainPage(ttk.Frame):
 
             file_screen = tk.Toplevel(self)
             file_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
+            file_screen.resizable(0,0)
             text = ScrolledText(file_screen, wrap="word", height=30, width=30)
 
             with open(file, 'r', encoding="iso-8859-2") as f:
@@ -184,6 +180,7 @@ class MainPage(ttk.Frame):
             progress_screen.geometry('350x100+{}+{}'.format(self.position_right, self.position_down))
             progress_screen.grab_set()  # zablokowanie głównego okna
             progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
+            progress_screen.resizable(0,0)
 
             progress_bar = ttk.Progressbar(progress_screen, orient=tk.HORIZONTAL, length=200, mode='indeterminate')
             progress_bar.pack(expand=True)
