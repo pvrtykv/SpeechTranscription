@@ -107,6 +107,7 @@ def transcribe(file):
     if file:
         if prefix == "ENC":
             file = change_prefix_and_decrypt(file, KEY)
+            recording_filename = os.path.splitext(os.path.basename(file))[0]
 
         file_list = open("julius/test.dbl", 'w')
         file_list.write(file)
