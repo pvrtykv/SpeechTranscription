@@ -68,13 +68,12 @@ class MainPage(ttk.Frame):
         prefix = os.path.basename(audio)[0:3]
         if audio:
             if prefix == "ENC":
-                enc_filename = audio
                 audio = utils.change_prefix_and_decrypt(audio, KEY)
 
             play_screen = tk.Toplevel(self)
             play_screen.title("Play " + os.path.basename(audio))
             play_screen.geometry("215x100+{}+{}".format(self.position_right, self.position_down))
-            play_screen.resizable(0,0)
+            play_screen.resizable(0, 0)
 
             pygame.mixer.init()
             pygame.mixer.music.load(audio)
@@ -101,16 +100,18 @@ class MainPage(ttk.Frame):
                 pygame.mixer.music.unload()
                 pygame.mixer.quit()
                 if prefix == "ENC":
-                    utils.encrypt(audio, KEY)
-                    os.rename(audio, enc_filename)
-                    self.is_paused = False
-                    self.is_playing = False
-                    self.is_started = False
+                    utils.change_prefix_and_encrypt()
+                self.is_paused = False
+                self.is_playing = False
+                self.is_started = False
                 play_screen.destroy()
 
             play_screen.protocol("WM_DELETE_WINDOW", on_closing)
 
     def play_audio(self):
+        print(pygame.mixer.music.get_busy())
+        print(self.is_playing)
+        print()
         if self.is_playing is False:
             if self.is_paused:
                 pygame.mixer.music.unpause()
@@ -144,7 +145,7 @@ class MainPage(ttk.Frame):
 
             file_screen = tk.Toplevel(self)
             file_screen.geometry('300x400+{}+{}'.format(self.position_right, self.position_down))
-            file_screen.resizable(0,0)
+            file_screen.resizable(0, 0)
             text = ScrolledText(file_screen, wrap="word", height=30, width=30)
 
             with open(file, 'r', encoding="iso-8859-2") as f:
@@ -180,7 +181,7 @@ class MainPage(ttk.Frame):
             progress_screen.geometry('350x100+{}+{}'.format(self.position_right, self.position_down))
             progress_screen.grab_set()  # zablokowanie głównego okna
             progress_screen.protocol("WM_DELETE_WINDOW", on_closing)
-            progress_screen.resizable(0,0)
+            progress_screen.resizable(0, 0)
 
             progress_bar = ttk.Progressbar(progress_screen, orient=tk.HORIZONTAL, length=200, mode='indeterminate')
             progress_bar.pack(expand=True)
