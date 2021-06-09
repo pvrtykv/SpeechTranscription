@@ -32,13 +32,15 @@ class Register(tk.Frame):
         button.pack()
 
     def register_user(self):
+        if not os.path.exists("users.txt"):
+            open("users.txt", "x")
         username_info = self.username.get()
         password_info = self.password.get()
-        encrypt = hash_password(password_info)
+        encrypted_password = hash_password(password_info)
 
-        file = open(username_info, "w")
+        file = open("users.txt", "a")
         file.write(username_info + "\n")
-        file.write(encrypt)
+        file.write(encrypted_password + "\n")
         file.close()
 
         self.username_entry.delete(0, 'end')

@@ -35,36 +35,38 @@ class Login(tk.Frame):
         self.username_login_entry.delete(0, 'end')
         self.password_login_entry.delete(0, 'end')
 
-        list_of_files = os.listdir()
-        if username1 in list_of_files:
-            file1 = open(username1, "r")
-            verify = file1.read().splitlines()
-            password = verify[1]
-
-            if self.verify_password(password, password1):
-                self.login_success()
-
+        if os.path.exists("users.txt"):
+            encrypted_password = ""
+            username = ""
+            with open("users.txt") as f:
+                for line in f:
+                    next_line = next(f)
+                    if username1 == line.strip("\n"):
+                        username = line.strip("\n")
+                        encrypted_password = next_line.strip("\n")
+                        break
+            if username:
+                if self.verify_password(encrypted_password, password1):
+                    self.login_success()
+                else:
+                    self.password_not_recognised()
             else:
-                self.password_not_recognised()
-
+                self.user_not_found()
         else:
             self.user_not_found()
 
     def login_success(self):
-
         self.controller.show_frame("MainPage")
 
     def password_not_recognised(self):
-
         password_not_recog_screen = tk.Toplevel(self)
         password_not_recog_screen.title("Success")
-        password_not_recog_screen.geometry("150x100")
+        password_not_recog_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
         ttk.Label(password_not_recog_screen, text="Invalid Password ").pack()
         ttk.Button(password_not_recog_screen, text="OK",
                    command=password_not_recog_screen.destroy).pack()
 
     def user_not_found(self):
-
         user_not_found_screen = tk.Toplevel(self)
         user_not_found_screen.title("Success")
         user_not_found_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
