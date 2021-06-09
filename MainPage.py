@@ -9,7 +9,7 @@ import pygame
 import utils
 from RecordControl import *
 from utils import KEY
-
+import datetime
 
 class MainPage(ttk.Frame):
 
@@ -42,7 +42,7 @@ class MainPage(ttk.Frame):
     def delete_screen(self, screen, record_control, thread, recording):
         record_control.finished = True
         thread.join()
-        utils.encrypt(recording, KEY)
+        utils.change_prefix_and_encrypt(recording, KEY)
         screen.destroy()
 
     '''
@@ -61,7 +61,9 @@ class MainPage(ttk.Frame):
         if not os.path.exists('media'):
             os.mkdir('media')
         record_control = RecordControl()
-        recording = utils.increment_filename("media/ENCrecording.wav")
+        recording_filename = datetime.datetime.now()
+        recording_filename = "rec-" + recording_filename.strftime("%y-%m-%d-%H-%M") + ".wav"
+        recording = utils.increment_filename("media/" + recording_filename)
         thread = threading.Thread(target=record_control.record_audio, args=(recording,))
         thread.start()
         ttk.Button(record_screen, text="STOP",
