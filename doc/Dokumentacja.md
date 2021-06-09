@@ -91,4 +91,4 @@ Przykładowy rezultat transkrypcji.
  - **Joanna Partyka**
  Transkrypcja mowy
  - **Jan Godlewski**
- Dokumentacja
+ Dokumentacja i poprawki
