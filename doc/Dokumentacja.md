@@ -87,8 +87,8 @@ Przykładowy rezultat transkrypcji.
 
 ## Zakres odpowiedzialności
  - **Joanna Hankus**
- wpisać
+ Aplikacja okienkowa
  - **Joanna Partyka**
- wpisać
+ Transkrypcja mowy
  - **Jan Godlewski**
- wpisać
+ Dokumentacja
