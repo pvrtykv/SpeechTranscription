@@ -100,7 +100,7 @@ class MainPage(ttk.Frame):
                 pygame.mixer.music.unload()
                 pygame.mixer.quit()
                 if prefix == "ENC":
-                    utils.change_prefix_and_encrypt()
+                    utils.change_prefix_and_encrypt(audio, KEY)
                 self.is_paused = False
                 self.is_playing = False
                 self.is_started = False
@@ -109,9 +109,6 @@ class MainPage(ttk.Frame):
             play_screen.protocol("WM_DELETE_WINDOW", on_closing)
 
     def play_audio(self):
-        print(pygame.mixer.music.get_busy())
-        print(self.is_playing)
-        print()
         if self.is_playing is False:
             if self.is_paused:
                 pygame.mixer.music.unpause()
