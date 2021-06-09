@@ -86,3 +86,9 @@ Przykładowy rezultat transkrypcji.
  - Github - repozytorium kodu oraz tablica kanban
 
 ## Zakres odpowiedzialności
+ - **Joanna Hankus**
+ wpisać
+ - **Joanna Partyka**
+ wpisać
+ - **Jan Godlewski**
+ wpisać
