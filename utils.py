@@ -8,7 +8,6 @@ import pyaudio
 import wave
 
 
-
 class RecordControl:
     def __init__(self):
         self.finished = False
@@ -16,10 +15,13 @@ class RecordControl:
 
 def increment_filename(path):
     filename, extension = os.path.splitext(path)
+    enc_path = os.path.dirname(path) + "/ENC" + os.path.basename(path)
+    enc_filename, extension = os.path.splitext(enc_path)
     counter = 1
 
-    while os.path.exists(path):
-        path = filename + str(counter) + extension
+    while os.path.exists(path) or os.path.exists(enc_path):
+        path = filename + "_" + str(counter) + extension
+        enc_path = enc_filename + "_" + str(counter) + extension
         counter += 1
 
     return path
@@ -85,6 +87,7 @@ def encrypt(filename, key):
     with open(filename, "wb") as file:
         file.write(encrypted_data)
 
+
 def decrypt(filename, key):
     f = Fernet(key)
     with open(filename, "rb") as file:
@@ -98,10 +101,12 @@ KEY = load_key()
 
 
 def transcribe(file):
-    prefix = os.path.basename(file)[0:3]
+    recording_filename = os.path.basename(file)
+    recording_filename = os.path.splitext(recording_filename)[0]
+    print(recording_filename)
+    prefix = recording_filename[0:3]
     if file:
         if prefix == "ENC":
-            enc_filename = file
             file = change_prefix_and_decrypt(file, KEY)
 
         file_list = open("julius/test.dbl", 'w')
@@ -111,15 +116,14 @@ def transcribe(file):
         if not os.path.exists('julius_output'):
             os.mkdir('julius_output')
 
-        output = increment_filename("julius_output/ENCoutput.txt")
+        output = increment_filename("julius_output/output-" + recording_filename + ".txt")
 
         subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + output],
                        shell=True, cwd="julius",
                        check=True)
 
         if prefix == "ENC":
-            encrypt(file, KEY)
-            os.rename(file, enc_filename)
+            file = change_prefix_and_encrypt(file, KEY)
 
         r = re.compile(r"sentence1: <s> (.+?) </s>")
 
@@ -130,7 +134,7 @@ def transcribe(file):
         if not os.path.exists('transcriptions'):
             os.mkdir('transcriptions')
 
-        transcription = increment_filename("transcriptions/ENCtranscription.txt")
+        transcription = increment_filename("transcriptions/transcription-" + recording_filename + ".txt")
         f2 = open(transcription, 'a')
 
         for line in lines:
@@ -144,10 +148,11 @@ def transcribe(file):
         with open(transcription, 'r', encoding="iso-8859-2") as f:
             text = f.read()
 
-        encrypt(output, KEY)
-        encrypt(transcription, KEY)
+        transcription_filename = os.path.basename(transcription)
+        change_prefix_and_encrypt(output, KEY)
+        change_prefix_and_encrypt(transcription, KEY)
 
-        return text, os.path.basename(transcription)
+        return text, transcription_filename
 
 
 def change_prefix_and_decrypt(file, key):
@@ -157,4 +162,13 @@ def change_prefix_and_decrypt(file, key):
     dec_filename = os.path.dirname(file) + "/" + dec_filename
     os.rename(file, dec_filename)
     file = dec_filename
+    return file
+
+
+def change_prefix_and_encrypt(file, key):
+    encrypt(file, key)
+    enc_filename = "ENC" + os.path.basename(file)
+    enc_filename = os.path.dirname(file) + "/" + enc_filename
+    os.rename(file, enc_filename)
+    file = enc_filename
     return file
