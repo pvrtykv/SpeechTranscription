@@ -1,9 +1,28 @@
+import binascii
+import hashlib
+import os
 import tkinter.ttk as ttk
 import tkinter as tk
-from utils import *
+
+from cryptography.fernet import Fernet
+
+
+def write_key():
+    key = Fernet.generate_key()
+    key_filename = "keys/" + Login.USERNAME + "_key.key"
+    with open(key_filename, "wb") as key_file:
+        key_file.write(key)
+
+
+def load_key():
+    key_filename = "keys/" + Login.USERNAME + "_key.key"
+    if os.path.exists(key_filename):
+        return open(key_filename, "rb").read()
 
 
 class Login(tk.Frame):
+    USERNAME = ""
+    KEY = ""
 
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -22,7 +41,7 @@ class Login(tk.Frame):
         self.password_login_entry = ttk.Entry(self, textvariable=self.password, show='*')
         self.password_login_entry.pack()
         ttk.Label(self, text="").pack()
-        ttk.Button(self, text="Login",  command=self.login_verify).pack()
+        ttk.Button(self, text="Login", command=self.login_verify).pack()
         self.focus_set()
         self.bind(self, '<Return>', (lambda event: self.login_verify()))
         button1 = ttk.Button(self, text="Back",
@@ -32,6 +51,7 @@ class Login(tk.Frame):
     def login_verify(self, event=None):
         username1 = self.username.get()
         password1 = self.password.get()
+        Login.USERNAME = username1
         self.username_login_entry.delete(0, 'end')
         self.password_login_entry.delete(0, 'end')
 
@@ -56,11 +76,13 @@ class Login(tk.Frame):
             self.user_not_found()
 
     def login_success(self):
+        if not os.path.exists("keys/" + Login.USERNAME + "_key.key"):
+            write_key()
+        Login.KEY = load_key()
         self.controller.show_frame("MainPage")
 
     def password_not_recognised(self):
         password_not_recog_screen = tk.Toplevel(self)
-        password_not_recog_screen.title("Success")
         password_not_recog_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
         ttk.Label(password_not_recog_screen, text="Invalid Password ").pack()
         ttk.Button(password_not_recog_screen, text="OK",
@@ -68,7 +90,6 @@ class Login(tk.Frame):
 
     def user_not_found(self):
         user_not_found_screen = tk.Toplevel(self)
-        user_not_found_screen.title("Success")
         user_not_found_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
         ttk.Label(user_not_found_screen, text="User Not Found").pack()
         ttk.Button(user_not_found_screen, text="OK", command=user_not_found_screen.destroy).pack()
@@ -82,3 +103,4 @@ class Login(tk.Frame):
                                       100000)
         pwdhash = binascii.hexlify(pwdhash).decode('ascii')
         return pwdhash == stored_password
+

@@ -46,4 +46,4 @@ class Register(tk.Frame):
         self.username_entry.delete(0, 'end')
         self.password_entry.delete(0, 'end')
 
-        self.controller.show_frame("MainPage")
+        self.controller.show_frame("Login")

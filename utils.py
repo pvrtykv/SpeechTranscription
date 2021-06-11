@@ -3,9 +3,9 @@ import hashlib
 import os
 import re
 import subprocess
+import tkinter.messagebox as messagebox
 from cryptography.fernet import Fernet
-import pyaudio
-import wave
+from Login import Login
 
 
 def increment_filename(path):
@@ -30,18 +30,6 @@ def hash_password(password):
     return (salt + pwdhash).decode('ascii')
 
 
-def write_key():
-    key = Fernet.generate_key()
-    with open("key.key", "wb") as key_file:
-        key_file.write(key)
-
-
-def load_key():
-    if os.path.exists('key.key'):
-        return open("key.key", "rb").read()
-    return
-
-
 def encrypt(filename, key):
     f = Fernet(key)
     with open(filename, "rb") as file:
@@ -60,33 +48,31 @@ def decrypt(filename, key):
         file.write(decrypted_data)
 
 
-KEY = load_key()
-
-
 def transcribe(file):
     recording_filename = os.path.basename(file)
     recording_filename = os.path.splitext(recording_filename)[0]
     prefix = recording_filename[0:3]
     if file:
         if prefix == "ENC":
-            file = change_prefix_and_decrypt(file, KEY)
+            file = change_prefix_and_decrypt(file, Login.KEY)
             recording_filename = os.path.splitext(os.path.basename(file))[0]
 
         file_list = open("julius/test.dbl", 'w')
         file_list.write(file)
         file_list.close()
 
-        if not os.path.exists('julius_output'):
-            os.mkdir('julius_output')
+        output_dirname = 'julius_output/' + Login.USERNAME
+        if not os.path.exists(output_dirname):
+            os.makedirs(output_dirname)
 
-        output = increment_filename("julius_output/output-" + recording_filename + ".txt")
+        output = increment_filename(output_dirname + "/output-" + recording_filename + ".txt")
 
         subprocess.run(["julius-dnn", "-C", "julius.jconf", "-dnnconf", "dnn.jconf", ">", "../" + output],
                        shell=True, cwd="julius",
                        check=True)
 
         if prefix == "ENC":
-            file = change_prefix_and_encrypt(file, KEY)
+            file = change_prefix_and_encrypt(file, Login.KEY)
 
         r = re.compile(r"sentence1: <s> (.+?) </s>")
 
@@ -94,10 +80,11 @@ def transcribe(file):
         lines = f1.readlines()
         f1.close()
 
-        if not os.path.exists('transcriptions'):
-            os.mkdir('transcriptions')
+        transcriptions_dirname = "transcriptions/" + Login.USERNAME
+        if not os.path.exists(transcriptions_dirname):
+            os.makedirs(transcriptions_dirname)
 
-        transcription = increment_filename("transcriptions/transcription-" + recording_filename + ".txt")
+        transcription = increment_filename(transcriptions_dirname + "/transcription-" + recording_filename + ".txt")
         f2 = open(transcription, 'a')
 
         for line in lines:
@@ -112,8 +99,8 @@ def transcribe(file):
             text = f.read()
 
         transcription_filename = os.path.basename(transcription)
-        change_prefix_and_encrypt(output, KEY)
-        change_prefix_and_encrypt(transcription, KEY)
+        change_prefix_and_encrypt(output, Login.KEY)
+        change_prefix_and_encrypt(transcription, Login.KEY)
 
         return text, transcription_filename
 
@@ -135,3 +122,7 @@ def change_prefix_and_encrypt(file, key):
     os.rename(file, enc_filename)
     file = enc_filename
     return file
+
+
+def not_authorized_message():
+    messagebox.showwarning(None, "You are not authorized to access this file!")

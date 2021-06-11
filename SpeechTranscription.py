@@ -1,6 +1,7 @@
 from tkinter import font as tkfont  # python 3
 import tkinter.ttk as ttk
-from Login import *
+import Login
+from Login import write_key
 from MainPage import *
 from Register import *
 
@@ -56,7 +57,7 @@ class StartPage(ttk.Frame):
 
 
 if __name__ == "__main__":
-    if not os.path.exists('key.key'):
-        write_key()
+    if not os.path.exists("keys"):
+        os.mkdir("keys")
     app = SampleApp()
     app.mainloop()
