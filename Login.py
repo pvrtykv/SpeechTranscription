@@ -3,6 +3,7 @@ import hashlib
 import os
 import tkinter.ttk as ttk
 import tkinter as tk
+import tkinter.messagebox as messagebox
 
 from cryptography.fernet import Fernet
 
@@ -69,30 +70,18 @@ class Login(tk.Frame):
                 if self.verify_password(encrypted_password, password1):
                     self.login_success()
                 else:
-                    self.password_not_recognised()
+                    messagebox.showwarning(None, "Wrong password!")
             else:
-                self.user_not_found()
+                messagebox.showwarning(None, "User not found!")
+
         else:
-            self.user_not_found()
+            messagebox.showwarning(None, "User not found!")
 
     def login_success(self):
         if not os.path.exists("keys/" + Login.USERNAME + "_key.key"):
             write_key()
         Login.KEY = load_key()
         self.controller.show_frame("MainPage")
-
-    def password_not_recognised(self):
-        password_not_recog_screen = tk.Toplevel(self)
-        password_not_recog_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
-        ttk.Label(password_not_recog_screen, text="Invalid Password ").pack()
-        ttk.Button(password_not_recog_screen, text="OK",
-                   command=password_not_recog_screen.destroy).pack()
-
-    def user_not_found(self):
-        user_not_found_screen = tk.Toplevel(self)
-        user_not_found_screen.geometry("150x100+{}+{}".format(self.position_right, self.position_down))
-        ttk.Label(user_not_found_screen, text="User Not Found").pack()
-        ttk.Button(user_not_found_screen, text="OK", command=user_not_found_screen.destroy).pack()
 
     def verify_password(self, stored_password, provided_password):
         salt = stored_password[:64]
