@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.messagebox as messagebox
 from utils import *
 
 
@@ -32,18 +33,30 @@ class Register(tk.Frame):
         button.pack()
 
     def register_user(self):
-        if not os.path.exists("users.txt"):
-            open("users.txt", "x")
-        username_info = self.username.get()
-        password_info = self.password.get()
-        encrypted_password = hash_password(password_info)
+        if not self.user_already_exists():
+            if not os.path.exists("users.txt"):
+                open("users.txt", "x")
+            username_info = self.username.get()
+            password_info = self.password.get()
+            encrypted_password = hash_password(password_info)
 
-        file = open("users.txt", "a")
-        file.write(username_info + "\n")
-        file.write(encrypted_password + "\n")
-        file.close()
+            file = open("users.txt", "a")
+            file.write(username_info + "\n")
+            file.write(encrypted_password + "\n")
+            file.close()
 
-        self.username_entry.delete(0, 'end')
-        self.password_entry.delete(0, 'end')
+            self.username_entry.delete(0, 'end')
+            self.password_entry.delete(0, 'end')
 
-        self.controller.show_frame("Login")
+            self.controller.show_frame("Login")
+        else:
+            messagebox.showwarning(None, "User with this username already exists!")
+
+    def user_already_exists(self):
+        username = self.username.get()
+        if os.path.exists("users.txt"):
+            with open("users.txt") as f:
+                for line in f:
+                    if username == line.strip("\n"):
+                        return True
+        return False
