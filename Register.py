@@ -4,7 +4,7 @@ import tkinter.messagebox as messagebox
 from utils import *
 
 
-class Register(tk.Frame):
+class Register(ttk.Frame):
 
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)

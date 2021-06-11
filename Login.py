@@ -21,7 +21,7 @@ def load_key():
         return open(key_filename, "rb").read()
 
 
-class Login(tk.Frame):
+class Login(ttk.Frame):
     USERNAME = ""
     KEY = ""
 
@@ -43,8 +43,6 @@ class Login(tk.Frame):
         self.password_login_entry.pack()
         ttk.Label(self, text="").pack()
         ttk.Button(self, text="Login", command=self.login_verify).pack()
-        self.focus_set()
-        self.bind(self, '<Return>', (lambda event: self.login_verify()))
         button1 = ttk.Button(self, text="Back",
                              command=lambda: controller.show_frame("StartPage"))
         button1.pack()
