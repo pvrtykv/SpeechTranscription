@@ -31,7 +31,7 @@ git clone https://github.com/pvrtykv/SpeechTranscription.git
 Oraz zainstalować wymagane pakiety:
 ```
 cd SpeechTranscription
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 **Uwaga!** W przypadku używania Pythona w wersji 3.7 i powyżej, aby zainstalować pakiet PyAudio, należy uruchomić terminal jako administrator i wprowadzić następujące komendy:
 ```
@@ -45,7 +45,7 @@ Może być konieczne zainstalowanie najnowszej wersji [VC REDIST x86](https://su
 ## Opis użytkowania
 Uruchomienie programu
 ```
-python3 SpeechTranscription.py
+python SpeechTranscription.py
 ```
 Po uruchomieniu programu pojawi się poniższy ekran.
 <p align="left">
