@@ -18,7 +18,7 @@ Symetryczne szyfrowanie zrealizowane przy pomocy klasy Fernet biblioteki cryptog
  - **Nagrywanie audio**
 Zrealizowane z użyciem biblioteki wave i pyaudio.
  - **Transkrypcja nagrania**
- Odbywa się poprzez wywołanie komendy shell uruchamiającej zmodyfikowaną wersję Juliusa - julius-dnn. 
+ Odbywa się poprzez wywołanie komendy shell uruchamiającej zmodyfikowaną wersję Juliusa - julius-dnn. Akceptowany format nagrania to 16kHz, RIFF WAV PCM 16 bit, mono, powyżej 30 sekund.
  - **Odtwarzanie audio**
 Do realizacji tego celu posłużono się biblioteką pygame.
 
