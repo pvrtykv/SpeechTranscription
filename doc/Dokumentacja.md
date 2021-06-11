@@ -23,6 +23,7 @@ Zrealizowane z użyciem biblioteki wave i pyaudio.
 Do realizacji tego celu posłużono się biblioteką pygame.
 
 ## Instalacja
+Aplikacja przeznaczona jest na komputery z systemem Windows.
 Należy sklonować repozytorium:
 ```
 git clone https://github.com/pvrtykv/SpeechTranscription.git
@@ -32,7 +33,14 @@ Oraz zainstalować wymagane pakiety:
 cd SpeechTranscription
 pip3 install -r requirements.txt
 ```
-Dodatkowo należy pobrać plik [julius.zip](https://www.dropbox.com/s/yxg5h3etu8zp18g/julius.zip?dl=0) oraz wypakować jego zawartość do folderu julius.
+**Uwaga!** W przypadku używania Pythona w wersji 3.7 i powyżej, aby zainstalować pakiet PyAudio, należy uruchomić terminal jako administrator i wprowadzić następujące komendy:
+```
+pip install pipwin
+pipwin install pyaudio
+```
+Więcej informacji o tym problemie [tutaj](https://stackoverflow.com/questions/52283840/i-cant-install-pyaudio-on-windows-how-to-solve-error-microsoft-visual-c-14)
+
+Dodatkowo należy pobrać archiwum [julius.zip](https://www.dropbox.com/s/yxg5h3etu8zp18g/julius.zip?dl=0) oraz wypakować jego zawartość do folderu julius.
 Może być konieczne zainstalowanie najnowszej wersji [VC REDIST x86](https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0).
 ## Opis użytkowania
 Uruchomienie programu
