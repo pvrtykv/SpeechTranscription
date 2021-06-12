@@ -67,6 +67,7 @@ Gdy logowanie przebiegnie pomyślnie, pojawi się główne menu.
 ## Opcje w menu
  Dostęp do opcji jest możliwy po zalogowaniu. 
  - **Record**
+  **UWAGA!** Silnik Julius działa dopiero po nagraniu dłuższym niż 30 sek!
  Nagrywanie dźwięku przez użytkownika.
  - **Play**
  Odtwarzanie nagranego wcześniej dźwięku.
