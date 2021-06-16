@@ -1,5 +1,5 @@
 # SpeechTranscription
-Aplikacja realizująca transkrypcję mowy do tekstu w języku polskim do zapisu rozmowy między dwoma
-osobami (sesja psychoanalityczna). Projekt wykonywany w ramach przedmiotu Studio projektowe 1. 
-
-Więcej informacji w [dokumentacji](https://github.com/pvrtykv/SpeechTranscription/blob/master/doc/Dokumentacja.md)
+Desktop application that allows user to convert speech recordings in Polish to text files. This application was created during the Project Studio course at AGH UST. [Documentation in Polish](https://github.com/pvrtykv/SpeechTranscription/blob/master/doc/Dokumentacja.md)
+<p align="center">
+  <img src="https://github.com/pvrtykv/SpeechTranscription/blob/master/images/menu.png?raw=true" /> 
+</p>
